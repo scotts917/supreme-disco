@@ -60,7 +60,56 @@ export default function MarkdownEditor({
         ) : (
           <div className="px-6 py-4 markdown-preview prose dark:prose-invert max-w-none">
             {content ? (
-              <ReactMarkdown>{content}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  // Disable potentially dangerous elements
+                  script: () => null,
+                  iframe: () => null,
+                  object: () => null,
+                  embed: () => null,
+                  // Override link component to open in new tab and sanitize URLs
+                  a: ({ node, href, children, ...props }) => {
+                    // Sanitize link URIs to prevent XSS attacks via javascript:, data:, vbscript: protocols
+                    const allowedProtocols = ['http:', 'https:', 'mailto:'];
+                    let sanitizedHref = '#';
+
+                    if (href) {
+                      try {
+                        // Handle relative URLs and anchors
+                        if (href.startsWith('/') || href.startsWith('#')) {
+                          sanitizedHref = href;
+                        } else {
+                          // Parse and validate absolute URLs
+                          const url = new URL(href, window.location.href);
+
+                          if (allowedProtocols.includes(url.protocol)) {
+                            sanitizedHref = href;
+                          } else {
+                            // Block dangerous protocols
+                            console.warn(`Blocked potentially dangerous link protocol: ${url.protocol}`);
+                          }
+                        }
+                      } catch (error) {
+                        // If URL parsing fails, it might be malformed - block it
+                        console.warn('Blocked malformed URL:', href);
+                      }
+                    }
+
+                    return (
+                      <a
+                        href={sanitizedHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        {...props}
+                      >
+                        {children}
+                      </a>
+                    );
+                  },
+                }}
+              >
+                {content}
+              </ReactMarkdown>
             ) : (
               <p className="text-gray-400 dark:text-gray-600 italic">
                 Nothing to preview yet. Start writing to see the preview.
