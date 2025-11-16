@@ -90,10 +90,10 @@ export default function Sidebar({
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 truncate text-base">
                       {entry.title || 'Untitled'}
                     </h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 truncate">
                       {getEntryPreview(entry.content) || 'Empty entry'}
                     </p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
