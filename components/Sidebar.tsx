@@ -74,7 +74,7 @@ export default function Sidebar({
         {entries.length === 0 ? (
           <div className="p-4 text-center text-gray-500 dark:text-gray-400">
             <p className="text-sm">No journal entries yet.</p>
-            <p className="text-sm mt-1">Click "New Entry" to start!</p>
+            <p className="text-sm mt-1">Click &ldquo;New Entry&rdquo; to start!</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
