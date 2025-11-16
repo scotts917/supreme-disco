@@ -3,14 +3,17 @@
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 import MarkdownEditor from '@/components/MarkdownEditor';
+import ColorPicker from '@/components/ColorPicker';
 import { JournalEntry } from '@/types/journal';
 import { storageUtils } from '@/lib/storage';
+import { DEFAULT_COLOR } from '@/lib/colors';
 
 export default function Home() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [currentContent, setCurrentContent] = useState('');
   const [currentTitle, setCurrentTitle] = useState('');
+  const [currentColor, setCurrentColor] = useState(DEFAULT_COLOR);
   const [isClient, setIsClient] = useState(false);
 
   // Load entries from localStorage on mount
@@ -24,8 +27,9 @@ export default function Home() {
       setSelectedEntryId(loadedEntries[0].id);
       setCurrentContent(loadedEntries[0].content);
       setCurrentTitle(loadedEntries[0].title);
+      setCurrentColor(loadedEntries[0].color);
     }
-  }, []);
+  }, [selectedEntryId]);
 
   // Save current entry when content changes
   useEffect(() => {
@@ -33,17 +37,18 @@ export default function Home() {
 
     const timeoutId = setTimeout(() => {
       const entry = entries.find(e => e.id === selectedEntryId);
-      if (entry && (entry.content !== currentContent || entry.title !== currentTitle)) {
+      if (entry && (entry.content !== currentContent || entry.title !== currentTitle || entry.color !== currentColor)) {
         storageUtils.updateEntry(selectedEntryId, {
           content: currentContent,
           title: currentTitle || 'Untitled',
+          color: currentColor,
         });
 
         // Update local state
         setEntries(prev =>
           prev.map(e =>
             e.id === selectedEntryId
-              ? { ...e, content: currentContent, title: currentTitle || 'Untitled', updatedAt: Date.now() }
+              ? { ...e, content: currentContent, title: currentTitle || 'Untitled', color: currentColor, updatedAt: Date.now() }
               : e
           )
         );
@@ -51,18 +56,20 @@ export default function Home() {
     }, 500); // Debounce saves by 500ms
 
     return () => clearTimeout(timeoutId);
-  }, [currentContent, currentTitle, selectedEntryId, isClient, entries]);
+  }, [currentContent, currentTitle, currentColor, selectedEntryId, isClient, entries]);
 
   const handleNewEntry = useCallback(() => {
     const newEntry = storageUtils.createEntry({
       title: 'Untitled',
       content: '',
+      color: DEFAULT_COLOR,
     });
 
     setEntries(prev => [newEntry, ...prev]);
     setSelectedEntryId(newEntry.id);
     setCurrentContent('');
     setCurrentTitle('');
+    setCurrentColor(DEFAULT_COLOR);
   }, []);
 
   const handleSelectEntry = useCallback((id: string) => {
@@ -71,6 +78,7 @@ export default function Home() {
       setSelectedEntryId(id);
       setCurrentContent(entry.content);
       setCurrentTitle(entry.title);
+      setCurrentColor(entry.color);
     }
   }, [entries]);
 
@@ -85,10 +93,12 @@ export default function Home() {
         setSelectedEntryId(remainingEntries[0].id);
         setCurrentContent(remainingEntries[0].content);
         setCurrentTitle(remainingEntries[0].title);
+        setCurrentColor(remainingEntries[0].color);
       } else {
         setSelectedEntryId(null);
         setCurrentContent('');
         setCurrentTitle('');
+        setCurrentColor(DEFAULT_COLOR);
       }
     }
   }, [selectedEntryId, entries]);
@@ -106,6 +116,10 @@ export default function Home() {
       }
     }
   }, [currentTitle]);
+
+  const handleColorChange = useCallback((colorId: string) => {
+    setCurrentColor(colorId);
+  }, []);
 
   if (!isClient) {
     return null; // Prevent hydration mismatch
@@ -131,7 +145,11 @@ export default function Home() {
                 value={currentTitle}
                 onChange={(e) => setCurrentTitle(e.target.value)}
                 placeholder="Entry title..."
-                className="w-full text-3xl font-bold bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600"
+                className="w-full text-3xl font-bold bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600 mb-4"
+              />
+              <ColorPicker
+                selectedColor={currentColor}
+                onColorChange={handleColorChange}
               />
             </div>
 

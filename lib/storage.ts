@@ -1,4 +1,5 @@
 import { JournalEntry, NewJournalEntry } from '@/types/journal';
+import { DEFAULT_COLOR } from './colors';
 
 const STORAGE_KEY = 'journal-entries';
 
@@ -41,6 +42,7 @@ export const storageUtils = {
     const entry: JournalEntry = {
       id: crypto.randomUUID(),
       ...newEntry,
+      color: newEntry.color || DEFAULT_COLOR,
       createdAt: now,
       updatedAt: now,
     };

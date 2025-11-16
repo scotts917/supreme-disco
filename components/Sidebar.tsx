@@ -1,6 +1,7 @@
 'use client';
 
 import { JournalEntry } from '@/types/journal';
+import { getColorById } from '@/lib/colors';
 
 interface SidebarProps {
   entries: JournalEntry[];
@@ -74,7 +75,7 @@ export default function Sidebar({
         {entries.length === 0 ? (
           <div className="p-4 text-center text-gray-500 dark:text-gray-400">
             <p className="text-sm">No journal entries yet.</p>
-            <p className="text-sm mt-1">Click "New Entry" to start!</p>
+            <p className="text-sm mt-1">Click &quot;New Entry&quot; to start!</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -90,9 +91,21 @@ export default function Sidebar({
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">
-                      {entry.title || 'Untitled'}
-                    </h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate text-sm">
+                        {entry.title || 'Untitled'}
+                      </h3>
+                      {(() => {
+                        const color = getColorById(entry.color);
+                        return color ? (
+                          <span
+                            className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${color.bgClass} ${color.textClass} whitespace-nowrap flex-shrink-0`}
+                          >
+                            {color.label}
+                          </span>
+                        ) : null;
+                      })()}
+                    </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
                       {getEntryPreview(entry.content) || 'Empty entry'}
                     </p>
