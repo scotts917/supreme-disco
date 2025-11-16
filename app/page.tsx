@@ -139,6 +139,7 @@ export default function Home() {
             <MarkdownEditor
               content={currentContent}
               onContentChange={handleContentChange}
+              title={currentTitle}
             />
           </>
         ) : (

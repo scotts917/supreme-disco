@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import ShareButtons from './ShareButtons';
 
 interface MarkdownEditorProps {
   content: string;
   onContentChange: (content: string) => void;
+  title?: string;
   placeholder?: string;
 }
 
 export default function MarkdownEditor({
   content,
   onContentChange,
+  title = 'Untitled',
   placeholder = 'Start writing your journal entry...',
 }: MarkdownEditorProps) {
   const [isPreview, setIsPreview] = useState(false);
@@ -42,8 +45,11 @@ export default function MarkdownEditor({
             Preview
           </button>
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          {content.length} characters
+        <div className="flex items-center gap-4">
+          <ShareButtons title={title} content={content} />
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            {content.length} characters
+          </div>
         </div>
       </div>
 
