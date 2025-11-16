@@ -1,21 +1,30 @@
 'use client';
 
-import { JournalEntry } from '@/types/journal';
+import { JournalEntry, Folder } from '@/types/journal';
+import FolderNav from './FolderNav';
 
 interface SidebarProps {
   entries: JournalEntry[];
+  folders: Folder[];
   selectedEntryId: string | null;
+  selectedFolderId: string | null;
   onSelectEntry: (id: string) => void;
+  onSelectFolder: (folderId: string | null) => void;
   onNewEntry: () => void;
   onDeleteEntry: (id: string) => void;
+  onFoldersChange: () => void;
 }
 
 export default function Sidebar({
   entries,
+  folders,
   selectedEntryId,
+  selectedFolderId,
   onSelectEntry,
+  onSelectFolder,
   onNewEntry,
   onDeleteEntry,
+  onFoldersChange,
 }: SidebarProps) {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -69,12 +78,22 @@ export default function Sidebar({
         </button>
       </div>
 
+      {/* Folder Navigation */}
+      <div className="border-b border-gray-200 dark:border-gray-700 px-2">
+        <FolderNav
+          folders={folders}
+          selectedFolderId={selectedFolderId}
+          onSelectFolder={onSelectFolder}
+          onFoldersChange={onFoldersChange}
+        />
+      </div>
+
       {/* Entries List */}
       <div className="flex-1 overflow-y-auto">
         {entries.length === 0 ? (
           <div className="p-4 text-center text-gray-500 dark:text-gray-400">
             <p className="text-sm">No journal entries yet.</p>
-            <p className="text-sm mt-1">Click "New Entry" to start!</p>
+            <p className="text-sm mt-1">Click &quot;New Entry&quot; to start!</p>
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">

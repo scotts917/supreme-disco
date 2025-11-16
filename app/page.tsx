@@ -3,24 +3,28 @@
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 import MarkdownEditor from '@/components/MarkdownEditor';
-import { JournalEntry } from '@/types/journal';
+import { JournalEntry, Folder } from '@/types/journal';
 import { storageUtils } from '@/lib/storage';
 
 export default function Home() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [currentContent, setCurrentContent] = useState('');
   const [currentTitle, setCurrentTitle] = useState('');
   const [isClient, setIsClient] = useState(false);
 
-  // Load entries from localStorage on mount
+  // Load entries and folders from localStorage on mount
   useEffect(() => {
     setIsClient(true);
     const loadedEntries = storageUtils.getEntries();
+    const loadedFolders = storageUtils.getFolders();
     setEntries(loadedEntries);
+    setFolders(loadedFolders);
 
     // Select the first entry if available
-    if (loadedEntries.length > 0 && !selectedEntryId) {
+    if (loadedEntries.length > 0) {
       setSelectedEntryId(loadedEntries[0].id);
       setCurrentContent(loadedEntries[0].content);
       setCurrentTitle(loadedEntries[0].title);
@@ -57,12 +61,25 @@ export default function Home() {
     const newEntry = storageUtils.createEntry({
       title: 'Untitled',
       content: '',
+      folderId: selectedFolderId,
     });
 
     setEntries(prev => [newEntry, ...prev]);
     setSelectedEntryId(newEntry.id);
     setCurrentContent('');
     setCurrentTitle('');
+  }, [selectedFolderId]);
+
+  const handleSelectFolder = useCallback((folderId: string | null) => {
+    setSelectedFolderId(folderId);
+    setSelectedEntryId(null);
+    setCurrentContent('');
+    setCurrentTitle('');
+  }, []);
+
+  const handleFoldersChange = useCallback(() => {
+    const loadedFolders = storageUtils.getFolders();
+    setFolders(loadedFolders);
   }, []);
 
   const handleSelectEntry = useCallback((id: string) => {
@@ -111,14 +128,23 @@ export default function Home() {
     return null; // Prevent hydration mismatch
   }
 
+  // Filter entries based on selected folder
+  const filteredEntries = selectedFolderId === null
+    ? entries.filter(e => e.folderId === null)
+    : entries.filter(e => e.folderId === selectedFolderId);
+
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar
-        entries={entries}
+        entries={filteredEntries}
+        folders={folders}
         selectedEntryId={selectedEntryId}
+        selectedFolderId={selectedFolderId}
         onSelectEntry={handleSelectEntry}
+        onSelectFolder={handleSelectFolder}
         onNewEntry={handleNewEntry}
         onDeleteEntry={handleDeleteEntry}
+        onFoldersChange={handleFoldersChange}
       />
 
       <main className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-950">

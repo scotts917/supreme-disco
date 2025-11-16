@@ -1,6 +1,7 @@
-import { JournalEntry, NewJournalEntry } from '@/types/journal';
+import { JournalEntry, NewJournalEntry, Folder } from '@/types/journal';
 
-const STORAGE_KEY = 'journal-entries';
+const ENTRIES_STORAGE_KEY = 'journal-entries';
+const FOLDERS_STORAGE_KEY = 'journal-folders';
 
 export const storageUtils = {
   // Get all journal entries
@@ -8,7 +9,7 @@ export const storageUtils = {
     if (typeof window === 'undefined') return [];
 
     try {
-      const data = localStorage.getItem(STORAGE_KEY);
+      const data = localStorage.getItem(ENTRIES_STORAGE_KEY);
       return data ? JSON.parse(data) : [];
     } catch (error) {
       console.error('Error reading from localStorage:', error);
@@ -27,7 +28,7 @@ export const storageUtils = {
     if (typeof window === 'undefined') return;
 
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      localStorage.setItem(ENTRIES_STORAGE_KEY, JSON.stringify(entries));
     } catch (error) {
       console.error('Error writing to localStorage:', error);
     }
@@ -79,5 +80,102 @@ export const storageUtils = {
 
     storageUtils.saveEntries(filteredEntries);
     return true;
+  },
+
+  // Get all folders
+  getFolders: (): Folder[] => {
+    if (typeof window === 'undefined') return [];
+
+    try {
+      const data = localStorage.getItem(FOLDERS_STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch (error) {
+      console.error('Error reading folders from localStorage:', error);
+      return [];
+    }
+  },
+
+  // Get a single folder by ID
+  getFolder: (id: string): Folder | null => {
+    const folders = storageUtils.getFolders();
+    return folders.find(folder => folder.id === id) || null;
+  },
+
+  // Save all folders
+  saveFolders: (folders: Folder[]): void => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      localStorage.setItem(FOLDERS_STORAGE_KEY, JSON.stringify(folders));
+    } catch (error) {
+      console.error('Error writing folders to localStorage:', error);
+    }
+  },
+
+  // Create a new folder
+  createFolder: (name: string): Folder => {
+    const folders = storageUtils.getFolders();
+    const now = Date.now();
+
+    const folder: Folder = {
+      id: crypto.randomUUID(),
+      name,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    folders.push(folder);
+    storageUtils.saveFolders(folders);
+
+    return folder;
+  },
+
+  // Rename a folder
+  renameFolder: (id: string, newName: string): Folder | null => {
+    const folders = storageUtils.getFolders();
+    const index = folders.findIndex(folder => folder.id === id);
+
+    if (index === -1) return null;
+
+    const updatedFolder: Folder = {
+      ...folders[index],
+      name: newName,
+      updatedAt: Date.now(),
+    };
+
+    folders[index] = updatedFolder;
+    storageUtils.saveFolders(folders);
+
+    return updatedFolder;
+  },
+
+  // Delete a folder (moves entries in it to root)
+  deleteFolder: (id: string): boolean => {
+    const folders = storageUtils.getFolders();
+    const filteredFolders = folders.filter(folder => folder.id !== id);
+
+    if (filteredFolders.length === folders.length) return false;
+
+    // Move all entries in this folder to root (folderId = null)
+    const entries = storageUtils.getEntries();
+    const updatedEntries = entries.map(entry =>
+      entry.folderId === id ? { ...entry, folderId: null } : entry
+    );
+
+    storageUtils.saveFolders(filteredFolders);
+    storageUtils.saveEntries(updatedEntries);
+
+    return true;
+  },
+
+  // Get entries by folder
+  getEntriesByFolder: (folderId: string | null): JournalEntry[] => {
+    const entries = storageUtils.getEntries();
+    return entries.filter(entry => entry.folderId === folderId);
+  },
+
+  // Move entry to folder
+  moveEntryToFolder: (entryId: string, folderId: string | null): JournalEntry | null => {
+    return storageUtils.updateEntry(entryId, { folderId });
   },
 };
