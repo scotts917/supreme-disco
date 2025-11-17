@@ -99,7 +99,20 @@ export default function Sidebar({
                         const color = getColorById(entry.color);
                         return color ? (
                           <span
-                            className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${color.bgClass} ${color.textClass} whitespace-nowrap flex-shrink-0`}
+                            style={{
+                              display: 'inline-block',
+                              paddingLeft: '0.5rem',
+                              paddingRight: '0.5rem',
+                              paddingTop: '0.125rem',
+                              paddingBottom: '0.125rem',
+                              borderRadius: '0.25rem',
+                              fontSize: '0.75rem',
+                              fontWeight: 500,
+                              backgroundColor: color.hexColor,
+                              color: color.id === 'yellow' ? '#111827' : '#ffffff',
+                              whiteSpace: 'nowrap',
+                              flexShrink: 0,
+                            }}
                           >
                             {color.label}
                           </span>

@@ -4,6 +4,7 @@ export interface ColorOption {
   bgClass: string;
   textClass: string;
   borderClass: string;
+  hexColor: string;
 }
 
 export const PRIMARY_COLORS: ColorOption[] = [
@@ -13,6 +14,7 @@ export const PRIMARY_COLORS: ColorOption[] = [
     bgClass: 'bg-red-500',
     textClass: 'text-white',
     borderClass: 'border-red-600',
+    hexColor: '#ef4444',
   },
   {
     id: 'blue',
@@ -20,6 +22,7 @@ export const PRIMARY_COLORS: ColorOption[] = [
     bgClass: 'bg-blue-500',
     textClass: 'text-white',
     borderClass: 'border-blue-600',
+    hexColor: '#3b82f6',
   },
   {
     id: 'green',
@@ -27,6 +30,7 @@ export const PRIMARY_COLORS: ColorOption[] = [
     bgClass: 'bg-green-500',
     textClass: 'text-white',
     borderClass: 'border-green-600',
+    hexColor: '#22c55e',
   },
   {
     id: 'yellow',
@@ -34,6 +38,7 @@ export const PRIMARY_COLORS: ColorOption[] = [
     bgClass: 'bg-yellow-400',
     textClass: 'text-gray-900',
     borderClass: 'border-yellow-500',
+    hexColor: '#facc15',
   },
   {
     id: 'purple',
@@ -41,6 +46,7 @@ export const PRIMARY_COLORS: ColorOption[] = [
     bgClass: 'bg-purple-500',
     textClass: 'text-white',
     borderClass: 'border-purple-600',
+    hexColor: '#a855f7',
   },
 ];
 
