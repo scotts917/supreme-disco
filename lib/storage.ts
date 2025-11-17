@@ -10,7 +10,20 @@ export const storageUtils = {
 
     try {
       const data = localStorage.getItem(STORAGE_KEY);
-      return data ? JSON.parse(data) : [];
+      const entries = data ? JSON.parse(data) : [];
+
+      // Migrate entries that don't have a color field
+      const migratedEntries = entries.map((entry: any) => ({
+        ...entry,
+        color: entry.color || DEFAULT_COLOR,
+      }));
+
+      // Save migrated entries back to localStorage if any were migrated
+      if (migratedEntries.some((entry: JournalEntry, index: number) => !entries[index].color)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedEntries));
+      }
+
+      return migratedEntries;
     } catch (error) {
       console.error('Error reading from localStorage:', error);
       return [];
