@@ -11,6 +11,14 @@ export default function ColorPicker({
   selectedColor,
   onColorChange,
 }: ColorPickerProps) {
+  const colorMap: Record<string, string> = {
+    red: '#ef4444',
+    blue: '#3b82f6',
+    green: '#22c55e',
+    yellow: '#facc15',
+    purple: '#a855f7',
+  };
+
   return (
     <div className="flex gap-2 items-center">
       <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -18,18 +26,26 @@ export default function ColorPicker({
       </label>
       <div className="flex gap-2">
         {PRIMARY_COLORS.map((color) => (
-          <button
+          <div
             key={color.id}
             onClick={() => onColorChange(color.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onColorChange(color.id);
+              }
+            }}
             style={{
-              backgroundColor: color.hexColor,
               width: '32px',
               height: '32px',
               borderRadius: '4px',
-              border: 'none',
               cursor: 'pointer',
-              transform: selectedColor === color.id ? 'scale(1.1)' : 'scale(1)',
-              transition: 'transform 0.2s ease',
+              background: colorMap[color.id],
+              border: selectedColor === color.id ? '3px solid white' : '1px solid rgba(255,255,255,0.2)',
+              transform: selectedColor === color.id ? 'scale(1.15)' : 'scale(1)',
+              transition: 'all 0.2s ease',
+              boxShadow: selectedColor === color.id ? '0 0 8px rgba(0,0,0,0.4)' : 'none',
             }}
             title={color.label}
             aria-label={`Set color to ${color.label}`}
