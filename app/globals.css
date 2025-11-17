@@ -44,6 +44,35 @@ body {
   background: #555;
 }
 
+/* Color picker button styles */
+[data-color-button] {
+  display: block !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+}
+
+[data-color="red"] {
+  background-color: #ef4444 !important;
+}
+
+[data-color="blue"] {
+  background-color: #3b82f6 !important;
+}
+
+[data-color="green"] {
+  background-color: #22c55e !important;
+}
+
+[data-color="yellow"] {
+  background-color: #facc15 !important;
+}
+
+[data-color="purple"] {
+  background-color: #a855f7 !important;
+}
+
 /* Markdown editor styles */
 .markdown-editor {
   min-height: 100%;

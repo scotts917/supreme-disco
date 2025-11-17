@@ -7,15 +7,6 @@ interface ColorPickerProps {
   onColorChange: (colorId: string) => void;
 }
 
-// Define hex colors outside component to ensure they're always available
-const HEX_COLORS: Record<string, string> = {
-  red: '#ef4444',
-  blue: '#3b82f6',
-  green: '#22c55e',
-  yellow: '#facc15',
-  purple: '#a855f7',
-};
-
 export default function ColorPicker({
   selectedColor,
   onColorChange,
@@ -26,37 +17,29 @@ export default function ColorPicker({
         Color:
       </label>
       <div className="flex gap-2">
-        {PRIMARY_COLORS.map((color) => {
-          const hexColor = HEX_COLORS[color.id];
-          return (
-            <div
-              key={color.id}
-              onClick={() => onColorChange(color.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  onColorChange(color.id);
-                }
-              }}
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                backgroundColor: hexColor,
-                backgroundImage: 'none',
-                border: selectedColor === color.id ? '3px solid white' : '1px solid rgba(255,255,255,0.2)',
-                transform: selectedColor === color.id ? 'scale(1.15)' : 'scale(1)',
-                transition: 'all 0.2s ease',
-                boxShadow: selectedColor === color.id ? '0 0 8px rgba(0,0,0,0.4)' : 'none',
-                outline: 'none',
-              } as React.CSSProperties}
-              title={color.label}
-              aria-label={`Set color to ${color.label}`}
-            />
-          );
-        })}
+        {PRIMARY_COLORS.map((color) => (
+          <div
+            key={color.id}
+            data-color-button
+            data-color={color.id}
+            onClick={() => onColorChange(color.id)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                onColorChange(color.id);
+              }
+            }}
+            style={{
+              border: selectedColor === color.id ? '3px solid white' : '1px solid rgba(255,255,255,0.2)',
+              transform: selectedColor === color.id ? 'scale(1.15)' : 'scale(1)',
+              transition: 'all 0.2s ease',
+              boxShadow: selectedColor === color.id ? '0 0 8px rgba(0,0,0,0.4)' : 'none',
+            }}
+            title={color.label}
+            aria-label={`Set color to ${color.label}`}
+          />
+        ))}
       </div>
     </div>
   );
