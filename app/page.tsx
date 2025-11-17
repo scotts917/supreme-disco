@@ -124,6 +124,12 @@ export default function Home() {
       <main className="flex-1 flex flex-col overflow-hidden bg-white dark:bg-gray-950">
         {selectedEntryId ? (
           <>
+            {/* Markdown Editor */}
+            <MarkdownEditor
+              content={currentContent}
+              onContentChange={handleContentChange}
+            />
+
             {/* Title Input */}
             <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
               <input
@@ -134,12 +140,6 @@ export default function Home() {
                 className="w-full text-3xl font-bold bg-transparent border-none outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-600"
               />
             </div>
-
-            {/* Markdown Editor */}
-            <MarkdownEditor
-              content={currentContent}
-              onContentChange={handleContentChange}
-            />
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-gray-400 dark:text-gray-600">
